@@ -58,8 +58,8 @@ Webflow.push(function () {
 
   function toggleIcon() {
     state = "ready_to_play";
-    $(".pause_icon").removeClass("played");
-    $(".play_icon").addClass("paused");
+    $(".pause_icon--vm-widget").removeClass("played");
+    $(".play_icon--vm-widget").addClass("paused");
   }
 
   function resetPlay() {

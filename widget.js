@@ -33,7 +33,6 @@ Webflow.push(function () {
   let recordIntervalId = null;
   let fetchInterval = null;
   let retryCount = 0;
-  let wavesurfer;
   const convertedFiles = {
     baby: "",
     "magic-chords": "",
@@ -71,9 +70,6 @@ Webflow.push(function () {
       transformedEl.pause();
       originalEl.pause();
       originalEl.currentTime = 0;
-      if (wavesurfer) {
-        wavesurfer.stop();
-      }
     }
   }
 
@@ -196,15 +192,9 @@ Webflow.push(function () {
       state = state === "playing" ? "paused" : "playing";
       if (state === "playing") {
         handlePlay(originalAudioElement, transformedAudioElement);
-        if (wavesurfer) {
-          wavesurfer.play();
-        }
       } else {
         transformedAudioElement.pause();
         originalAudioElement.pause();
-        if (wavesurfer) {
-          wavesurfer.pause();
-        }
       }
 
       $(".pause_icon").toggleClass("played");
@@ -224,29 +214,6 @@ Webflow.push(function () {
     $(".play-pause--vm-widget").css({ display: "flex" });
     $(".vm-widget--btns-wrapper").css({ display: "flex" });
     $(".control_share--vm-widget").css({ display: "flex" });
-  }
-
-  function destroyWavesurfer() {
-    if (wavesurfer) {
-      wavesurfer.destroy();
-    }
-    wavesurfer = null;
-  }
-
-  function disableButtons(disablePlay = true, disableWavesurfer) {
-    $(".record_icon").removeClass("start_record");
-    $(".control_share").addClass("control_disable");
-    $(".audio-snippet_btn").addClass("control_disable");
-    if (disableWavesurfer) {
-      destroyWavesurfer();
-    }
-    if (disablePlay) {
-      $(".toggle-text").addClass("control_disable");
-      $(".control_play").addClass("control_disable");
-    }
-    if (state === "playing") {
-      toggleIcon();
-    }
   }
 
   function setMicrophoneLocalStorage() {
@@ -289,7 +256,6 @@ Webflow.push(function () {
           recordInterval = 0;
           if (mediaRecorder) {
             mediaRecorder.onstart = function () {
-              disableButtons(true, true);
               state = "recording";
               animations[0].play();
               recordIntervalId = setInterval(() => {
@@ -368,22 +334,6 @@ Webflow.push(function () {
         const recentActiveFile = getFileUrlOnActiveType();
         setAudio(convertedFiles.original, ORIG_AUDIO);
         setAudio(recentActiveFile, MOD_AUDIO);
-        destroyWavesurfer();
-        wavesurfer = WaveSurfer.create({
-          container: ".wf_wrap",
-          barWidth: 2.5,
-          barHeight: 1.5,
-          barMinHeight: 4,
-          barGap: 3,
-          responsive: true,
-          interact: false,
-          progressColor: "#00fff6",
-          cursorColor: "transparent",
-          height: 28,
-          barRadius: 2,
-        });
-        wavesurfer.load(convertedFiles.original);
-        wavesurfer.setVolume(0);
         chunks = [];
         clearFetchInterval();
       }

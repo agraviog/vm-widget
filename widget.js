@@ -45,7 +45,6 @@ Webflow.push(function () {
     baby: "",
     "magic-chords": "",
     cave: "",
-    original: "",
   };
 
   const convertVoiceIds = ["baby", "magic-chords", "cave"];
@@ -351,18 +350,18 @@ Webflow.push(function () {
           })
         )
       );
+      console.log({ results });
+
+      retryCount += 1;
 
       if (results.some((res) => [400, 500].includes(res.status))) {
         clearFetchInterval();
         throw new Error("Fetch was not successful!");
       }
-      retryCount += 1;
       if (results.every((res) => res.status === 200)) {
-        let i = 0;
         for (const result of results) {
           const { url } = await result.json();
           convertedFiles[convertVoiceIds[i]] = url;
-          i += 1;
         }
         showReadyToPlayUI();
 

@@ -180,15 +180,11 @@ Webflow.push(function () {
     }
   }
 
-  $(`.control_play`).on("click", function () {
+  $(`.play-pause--vm-widget`).on("click", function () {
     const transformedAudioElement = document.getElementById(MOD_AUDIO);
     const originalAudioElement = document.getElementById(ORIG_AUDIO);
 
-    if (
-      transformedAudioElement &&
-      originalAudioElement &&
-      !$(".control_play").hasClass("control_disable")
-    ) {
+    if (transformedAudioElement && originalAudioElement) {
       state = state === "playing" ? "paused" : "playing";
       if (state === "playing") {
         handlePlay(originalAudioElement, transformedAudioElement);
@@ -206,6 +202,8 @@ Webflow.push(function () {
     state = "loading";
     $(".record--vm-widget").css({ display: "none" });
     $(".loading_record--vm-widget").css({ display: "flex" });
+    $(".recording-text").removeClass("active-text");
+    $(".loading-text").addClass("active-text");
   }
 
   function showReadyToPlayUI() {
@@ -214,6 +212,8 @@ Webflow.push(function () {
     $(".play-pause--vm-widget").css({ display: "flex" });
     $(".vm-widget--btns-wrapper").css({ display: "flex" });
     $(".control_share--vm-widget").css({ display: "flex" });
+    $(".loading-text").removeClass("active-text");
+    $(".done-text").addClass("active-text");
   }
 
   function setMicrophoneLocalStorage() {
@@ -258,6 +258,8 @@ Webflow.push(function () {
             mediaRecorder.onstart = function () {
               state = "recording";
               animations[0].play();
+              $(".start-text").removeClass("active-text");
+              $(".recording-text").addClass("active-text");
               recordIntervalId = setInterval(() => {
                 recordInterval += 1;
                 if (recordInterval > 10) {
@@ -316,7 +318,6 @@ Webflow.push(function () {
           })
         )
       );
-      console.log({ results });
 
       retryCount += 1;
 
@@ -381,27 +382,35 @@ Webflow.push(function () {
     $(voiceItemClass).addClass("active");
   }
 
+  function setVoiceItemAttr(item) {
+    $(".vm-widget--btns").attr("data-voiceid", item);
+  }
+
   $(".original-btn").on("click", function () {
     showVoiceItem(".original-btn");
     voiceClick();
+    setVoiceItemAttr("original");
   });
 
   $(".voice1-btn").on("click", function () {
     showVoiceItem(".voice1-btn");
     voiceClick();
+    setVoiceItemAttr(convertVoiceIds[0]);
   });
 
   $(".voice2-btn").on("click", function () {
     showVoiceItem(".voice2-btn");
     voiceClick();
+    setVoiceItemAttr(convertVoiceIds[1]);
   });
 
   $(".voice3-btn").on("click", function () {
     showVoiceItem(".voice3-btn");
     voiceClick();
+    setVoiceItemAttr(convertVoiceIds[2]);
   });
 
-  $(".control_share").on("click", async function () {
+  $(".control_share--vm-widget").on("click", async function () {
     const voiceId = $(".vm-widget--btns").attr("data-voiceid") || "baby";
     const id = fetchIds[voiceId];
     const url = `${SHARE_SNIPPET_URL}?voiceId=${voiceId}&id=${id}`;

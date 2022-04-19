@@ -8,6 +8,7 @@ Webflow.push(function () {
   const MOD_AUDIO = "control_upload_audio_transformed";
   const ORIG_AUDIO = "control_upload_audio_original";
   const SHARE_SNIPPET_URL = "https://voicemod-net.webflow.io/share-snippet";
+  const DEFAULT_VOICE = "original";
   const MAX_GET_RETRIES = 10;
   function getShareData(url) {
     return {
@@ -26,7 +27,7 @@ Webflow.push(function () {
 
   // ready | recording | loading | ready_to_play |  playing | paused | playing
   let state = "ready";
-  let isTransformed = true;
+  let isTransformed = false;
   let chunks = [];
   let mediaRecorder = null;
   let recordInterval = 0;
@@ -49,7 +50,7 @@ Webflow.push(function () {
   const convertVoiceIds = ["baby", "magic-chords", "cave"];
 
   function getFileUrlOnActiveType() {
-    const voiceId = $(".vm-widget--btns").attr("data-voiceid") || "baby";
+    const voiceId = $(".vm-widget--btns").attr("data-voiceid") || DEFAULT_VOICE;
     if (!!convertedFiles.original) {
       return convertedFiles[voiceId];
     }
@@ -75,7 +76,8 @@ Webflow.push(function () {
 
   function setFilesOnCorrectType() {
     setTimeout(() => {
-      const voiceId = $(".vm-widget--btns").attr("data-voiceid") || "baby";
+      const voiceId =
+        $(".vm-widget--btns").attr("data-voiceid") || DEFAULT_VOICE;
       const transformedUrl = convertedFiles[voiceId];
 
       if (transformedUrl) {
@@ -411,7 +413,7 @@ Webflow.push(function () {
   });
 
   $(".control_share--vm-widget").on("click", async function () {
-    const voiceId = $(".vm-widget--btns").attr("data-voiceid") || "baby";
+    const voiceId = $(".vm-widget--btns").attr("data-voiceid") || DEFAULT_VOICE;
     const id = fetchIds[voiceId];
     const url = `${SHARE_SNIPPET_URL}?voiceId=${voiceId}&id=${id}`;
     if (navigator?.share) {
@@ -430,7 +432,7 @@ Webflow.push(function () {
   });
 
   $(".share-link_btn").on("click", async function () {
-    const voiceId = $(".vm-widget--btns").attr("data-voiceid") || "baby";
+    const voiceId = $(".vm-widget--btns").attr("data-voiceid") || DEFAULT_VOICE;
     const id = fetchIds[voiceId];
     const text = `${SHARE_SNIPPET_URL}?voiceId=${voiceId}&id=${id}`;
     await navigator.clipboard.writeText(text);

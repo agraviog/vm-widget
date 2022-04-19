@@ -193,8 +193,8 @@ Webflow.push(function () {
         originalAudioElement.pause();
       }
 
-      $(".pause_icon").toggleClass("played");
-      $(".play_icon").toggleClass("paused");
+      $(".pause_icon--vm-widget").toggleClass("played");
+      $(".play_icon--vm-widget").toggleClass("paused");
     }
   });
 

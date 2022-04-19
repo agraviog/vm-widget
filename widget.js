@@ -430,29 +430,23 @@ Webflow.push(function () {
   }
 
   $(".original-btn").on("click", function () {
-    showVoiceItem("baby");
+    showVoiceItem(".original-btn");
     voiceClick();
   });
 
-  $(".overlay--magic-chords").on("click", function () {
-    if (!$(".audio-snippet_btn").hasClass("control_disable")) {
-      showVoiceItem("magic-chords");
-      voiceClick();
-    }
+  $(".voice1-btn").on("click", function () {
+    showVoiceItem(".voice1-btn");
+    voiceClick();
   });
 
-  $(".overlay--cave").on("click", function () {
-    if (!$(".audio-snippet_btn").hasClass("control_disable")) {
-      showVoiceItem("cave");
-      voiceClick();
-    }
+  $(".voice2-btn").on("click", function () {
+    showVoiceItem(".voice2-btn");
+    voiceClick();
   });
 
-  $(".overlay--radio-demon").on("click", function () {
-    if (!$(".audio-snippet_btn").hasClass("control_disable")) {
-      showVoiceItem("radio-demon");
-      voiceClick();
-    }
+  $(".voice3-btn").on("click", function () {
+    showVoiceItem(".voice3-btn");
+    voiceClick();
   });
 
   $(".control_share").on("click", async function () {

@@ -325,9 +325,11 @@ Webflow.push(function () {
         throw new Error("Fetch was not successful!");
       }
       if (results.every((res) => res.status === 200)) {
+        let i = 0;
         for (const result of results) {
           const { url } = await result.json();
           convertedFiles[convertVoiceIds[i]] = url;
+          i += 1;
         }
         showReadyToPlayUI();
 

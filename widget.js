@@ -211,6 +211,7 @@ Webflow.push(function () {
   function showReadyToPlayUI() {
     state = "ready_to_play";
     $(".loading_record--vm-widget").css({ display: "none" });
+    $(".vm-widget--img-wrapper").css({ display: "none" });
     $(".play-pause--vm-widget").css({ display: "flex" });
     $(".vm-widget--btns-wrapper").css({ display: "flex" });
     $(".control_share--vm-widget").css({ display: "flex" });
@@ -390,24 +391,28 @@ Webflow.push(function () {
 
   $(".original-btn").on("click", function () {
     showVoiceItem(".original-btn");
+    isTransformed = false;
     voiceClick();
     setVoiceItemAttr("original");
   });
 
   $(".voice1-btn").on("click", function () {
     showVoiceItem(".voice1-btn");
+    isTransformed = true;
     voiceClick();
     setVoiceItemAttr(convertVoiceIds[0]);
   });
 
   $(".voice2-btn").on("click", function () {
     showVoiceItem(".voice2-btn");
+    isTransformed = true;
     voiceClick();
     setVoiceItemAttr(convertVoiceIds[1]);
   });
 
   $(".voice3-btn").on("click", function () {
     showVoiceItem(".voice3-btn");
+    isTransformed = true;
     voiceClick();
     setVoiceItemAttr(convertVoiceIds[2]);
   });

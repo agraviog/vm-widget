@@ -3,8 +3,8 @@ Webflow.push(function () {
   const lottie = Webflow.require("lottie").lottie;
   const REQUEST_KEY = "voicemod_mic_request";
   const animations = lottie.getRegisteredAnimations();
-  const API_URL = "https://api.voicemod.net/v2/cloud";
-  const X_KEY = "DGx0ojrgI6lpD7M6kqecr4jkh5in4q8c";
+  const API_URL = "https://staging-gateway-api.voicemod.net/v2/cloud";
+  const X_KEY = "zqqztBHlkyIOAHMJgVaskJWrqO2ssXQo";
   const MOD_AUDIO = "control_upload_audio_transformed";
   const ORIG_AUDIO = "control_upload_audio_original";
   const SHARE_SNIPPET_URL = "https://voicemod-net.webflow.io/share-snippet";
@@ -38,9 +38,6 @@ Webflow.push(function () {
     baby: "",
     "magic-chords": "",
     cave: "",
-    "radio-demon": "",
-    "man-to-woman": "",
-    deep: "",
     original: "",
   };
 
@@ -48,24 +45,13 @@ Webflow.push(function () {
     baby: "",
     "magic-chords": "",
     cave: "",
-    "radio-demon": "",
-    "man-to-woman": "",
-    deep: "",
     original: "",
   };
 
-  const convertVoiceIds = [
-    "baby",
-    "magic-chords",
-    "cave",
-    "radio-demon",
-    "man-to-woman",
-    "deep",
-  ];
+  const convertVoiceIds = ["baby", "magic-chords", "cave"];
 
   function getFileUrlOnActiveType() {
-    const voiceId =
-      $(".audio-snippet_btn__wrapper").attr("data-voiceid") || "baby";
+    const voiceId = $(".vm-widget--btns").attr("data-voiceid") || "baby";
     if (!!convertedFiles.original) {
       return convertedFiles[voiceId];
     }
@@ -94,8 +80,7 @@ Webflow.push(function () {
 
   function setFilesOnCorrectType() {
     setTimeout(() => {
-      const voiceId =
-        $(".audio-snippet_btn__wrapper").attr("data-voiceid") || "baby";
+      const voiceId = $(".vm-widget--btns").attr("data-voiceid") || "baby";
       const transformedUrl = convertedFiles[voiceId];
 
       if (transformedUrl) {
@@ -118,21 +103,6 @@ Webflow.push(function () {
       transformedEl.pause();
     }
   }
-
-  $("#checkbox-2").on("click", function () {
-    if (!$(".voicemod_checkbox").hasClass("control_disable")) {
-      $(".toggle-text").toggleClass("toggle-off");
-      $(".toggle-text-off").toggleClass("toggle-off");
-      isTransformed = !isTransformed;
-      if (!isTransformed) {
-        disableButtons(false);
-      } else {
-        showReadyToPlayUI();
-      }
-      toggleIcon();
-      resetPlay();
-    }
-  });
 
   function createUrlBasedOnFile(file) {
     const blob = window.URL || window.webkitURL;
@@ -181,26 +151,6 @@ Webflow.push(function () {
       return false;
     }
   }
-
-  function closeModal() {
-    [
-      // to keep
-      ".upload-fail-wrapper",
-      ".mic-detection-wrapper",
-      ".convert-failed-wrapper",
-    ].forEach((modal) => {
-      $(modal).css({ display: "none" });
-    });
-  }
-
-  $(".record_new_audio_button").on("click", () => {
-    closeModal();
-    startRecordProcess();
-  });
-
-  $(".play-voicemod").on("click", closeModal);
-
-  $(".modal_close").on("click", closeModal);
 
   function secondsToMinutes(time) {
     return (
@@ -265,25 +215,16 @@ Webflow.push(function () {
 
   function showLoadingUI() {
     state = "loading";
-    $(".record_icon").addClass("stop_record");
-    $(".loading_record").addClass("stop_record");
-    $(".converting_state").addClass("stop_record");
-    $(".record_icon").removeClass("start_record");
-    $(".countdown_record").removeClass("start_record");
+    $(".record--vm-widget").css({ display: "none" });
+    $(".loading_record--vm-widget").css({ display: "flex" });
   }
 
   function showReadyToPlayUI() {
     state = "ready_to_play";
-    $(".record_icon").removeClass("stop_record");
-    $(".loading_record").removeClass("stop_record");
-    $(".converting_state").removeClass("stop_record");
-
-    $(".control_share").removeClass("control_disable");
-    $(".control_play").removeClass("control_disable");
-    $(".toggle-text").removeClass("control_disable");
-    $(".checkbox").removeClass("control_disable");
-    $(".audio-snippet_btn").removeClass("control_disable");
-    $("#checkbox-2").removeAttr("disabled");
+    $(".loading_record--vm-widget").css({ display: "none" });
+    $(".play-pause--vm-widget").css({ display: "flex" });
+    $(".vm-widget--btns-wrapper").css({ display: "flex" });
+    $(".control_share--vm-widget").css({ display: "flex" });
   }
 
   function destroyWavesurfer() {
@@ -347,14 +288,11 @@ Webflow.push(function () {
           );
 
           recordInterval = 0;
-          $(".mic-detection-wrapper").css({ display: "none" });
           if (mediaRecorder) {
             mediaRecorder.onstart = function () {
               disableButtons(true, true);
               state = "recording";
-              $("#checkbox-2").attr("disabled", "true");
-              $(".record_icon").addClass("start_record");
-              $(".countdown_record").addClass("start_record");
+              $(".loading_record--vm-widget").css({ display: "flex" });
               animations[0].play();
               recordIntervalId = setInterval(() => {
                 recordInterval += 1;
@@ -387,13 +325,12 @@ Webflow.push(function () {
           mediaRecorder.stop();
         }
       } catch (e) {
-        $(".mic-detection-wrapper").css({ display: "flex" });
         localStorage.removeItem(REQUEST_KEY);
       }
     }
   }
 
-  $(".control_record").on("click", startRecordProcess);
+  $(".record--vm-widget").on("click", startRecordProcess);
 
   function clearFetchInterval() {
     clearInterval(fetchInterval);
@@ -405,7 +342,6 @@ Webflow.push(function () {
     fetchInterval = setInterval(async () => {
       if (retryCount > MAX_GET_RETRIES) {
         clearFetchInterval();
-        $(".convert-failed-wrapper").css({ display: "flex" });
       }
       const results = await Promise.all(
         convertVoiceIds.map((voiceKey) =>
@@ -419,7 +355,6 @@ Webflow.push(function () {
 
       if (results.some((res) => [400, 500].includes(res.status))) {
         clearFetchInterval();
-        $(".convert-failed-wrapper").css({ display: "flex" });
         throw new Error("Fetch was not successful!");
       }
       retryCount += 1;
@@ -484,23 +419,21 @@ Webflow.push(function () {
     toggleIcon();
   }
 
-  function showVoiceItem(voiceItem) {
-    $(".audio-snippet_icons").removeClass("description--current");
-    $(`.${voiceItem}--icon`).addClass("description--current");
-    convertVoiceIds.forEach((voiceId) =>
-      $(`#${voiceId}-btn`).removeClass("overlay-btn--current")
+  const buttons = ["original-btn", "voice1-btn", "voice2-btn", "voice3-btn"];
+
+  function showVoiceItem(voiceItemClass) {
+    const inactiveClasses = buttons.filter(
+      (button) => button !== voiceItemClass
     );
-    $(`#${voiceItem}-btn`).addClass("overlay-btn--current");
-    $(".audio-snippet_btn__wrapper").attr("data-voiceid", voiceItem);
-    $(".audio-snippet_description").removeClass("description--current");
-    $(`.${voiceItem}--description`).addClass("description--current");
+    inactiveClasses.forEach((voiceClass) => {
+      $(voiceClass).removeClass("active");
+    });
+    $(voiceItemClass).addClass("active");
   }
 
-  $(".overlay--baby").on("click", function () {
-    if (!$(".audio-snippet_btn").hasClass("control_disable")) {
-      showVoiceItem("baby");
-      voiceClick();
-    }
+  $(".original-btn").on("click", function () {
+    showVoiceItem("baby");
+    voiceClick();
   });
 
   $(".overlay--magic-chords").on("click", function () {
@@ -524,50 +457,30 @@ Webflow.push(function () {
     }
   });
 
-  $(".overlay--man-to-woman").on("click", function () {
-    if (!$(".audio-snippet_btn").hasClass("control_disable")) {
-      showVoiceItem("man-to-woman");
-      voiceClick();
-    }
-  });
-
-  $(".overlay--deep").on("click", function () {
-    if (!$(".audio-snippet_btn").hasClass("control_disable")) {
-      showVoiceItem("deep");
-      voiceClick();
-    }
-  });
-
   $(".control_share").on("click", async function () {
-    if (!$(".control_share").hasClass("control_disable")) {
-      const voiceId =
-        $(".audio-snippet_btn__wrapper").attr("data-voiceid") || "baby";
-      const id = fetchIds[voiceId];
-      const url = `${SHARE_SNIPPET_URL}?voiceId=${voiceId}&id=${id}`;
-      if (navigator?.share) {
-        try {
-          const shareData = getShareData(url);
-          if (navigator?.canShare?.(shareData)) {
-            await navigator.share(shareData);
-          }
-        } catch (e) {
-          console.log({ e });
+    const voiceId = $(".vm-widget--btns").attr("data-voiceid") || "baby";
+    const id = fetchIds[voiceId];
+    const url = `${SHARE_SNIPPET_URL}?voiceId=${voiceId}&id=${id}`;
+    if (navigator?.share) {
+      try {
+        const shareData = getShareData(url);
+        if (navigator?.canShare?.(shareData)) {
+          await navigator.share(shareData);
         }
-      } else {
-        $(".share-link-wrapper").css({ display: "block" });
-        $(".share-link").text(url);
+      } catch (e) {
+        console.log({ e });
       }
+    } else {
+      $(".share-link-wrapper").css({ display: "block" });
+      $(".share-link").text(url);
     }
   });
 
   $(".share-link_btn").on("click", async function () {
-    const voiceId =
-      $(".audio-snippet_btn__wrapper").attr("data-voiceid") || "baby";
+    const voiceId = $(".vm-widget--btns").attr("data-voiceid") || "baby";
     const id = fetchIds[voiceId];
     const text = `${SHARE_SNIPPET_URL}?voiceId=${voiceId}&id=${id}`;
     await navigator.clipboard.writeText(text);
     $(".share-link-wrapper").css({ display: "none" });
   });
-
-  $("#checkbox-2").attr("disabled", "true");
 });

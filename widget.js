@@ -292,7 +292,6 @@ Webflow.push(function () {
             mediaRecorder.onstart = function () {
               disableButtons(true, true);
               state = "recording";
-              $(".loading_record--vm-widget").css({ display: "flex" });
               animations[0].play();
               recordIntervalId = setInterval(() => {
                 recordInterval += 1;
